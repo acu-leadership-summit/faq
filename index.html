@@ -192,11 +192,19 @@ mark { background: var(--mark); color: var(--mark-fg); border-radius: 4px; paddi
 .day time { display: block; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--c); }
 .tz { color: var(--muted); font-size: .88rem; }
 
-.formula { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0 14px; font-variant-numeric: tabular-nums; }
+.formula { display: flex; flex-wrap: nowrap; white-space: nowrap; max-width: 100%; overflow-x: auto; align-items: center; gap: 8px; margin: 8px 0 14px; font-variant-numeric: tabular-nums; }
 .formula span { padding: 6px 12px; border-radius: 999px; background: var(--bg); font-weight: 700; }
 .formula b { color: var(--c); font-weight: 800; font-size: 1.1rem; }
 .formula span.total { background: var(--c); color: #fff; }
 
+.flights { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 4px 0 14px; }
+.flight { min-width: 0; border: 2px dashed color-mix(in srgb, var(--c) 40%, transparent); border-radius: 16px; padding: 12px 16px; }
+.flight .label { color: var(--c); }
+.flight h5 { margin: 2px 0 8px; font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.route { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: start; }
+.route time { display: block; font-family: var(--f-display); font-weight: 600; font-size: 1.25rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.route span { display: block; color: var(--muted); font-size: .88rem; line-height: 1.3; margin-top: 2px; }
+.route .arrow { color: var(--c); font-size: 1.3rem; margin-top: 0; }
 .scen { list-style: none; padding: 0 !important; margin: 6px 0 12px; display: grid; gap: 8px; }
 .scen li { background: var(--bg); border-radius: 14px; padding: 10px 14px; margin: 0; }
 .scen b { display: block; }
@@ -256,7 +264,11 @@ footer .wrap > p { margin: 0; text-align: center; background: var(--surface); bo
 }
 @media (max-width: 560px) {
   .wrap { padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
-  .two, .timeline, .people, .pack-grid { grid-template-columns: minmax(0, 1fr); }
+  .two, .timeline, .people, .pack-grid, .flights { grid-template-columns: minmax(0, 1fr); }
+  .formula { gap: 5px; font-size: .82rem; }
+  .formula span { padding: 5px 9px; flex: none; }
+  .formula span.total { flex: 0 1 auto; min-width: 0; white-space: normal; text-align: center; line-height: 1.25; border-radius: 12px; }
+  .formula b { font-size: .95rem; }
   details.q > summary { padding: 14px 16px; font-size: 1rem; }
   .answer { margin: 0 16px; }
   .elev-row { grid-template-columns: 84px minmax(0, 1fr) 84px; }
@@ -401,7 +413,7 @@ const TBC = '<span class="tbc">Date to confirm</span>';
 
 const PACKING = [
   { group: "Clothing", items: ["Thermals", "Flannel shirts", "Long-sleeve shirts", "Jeans / leggings", "Sweaters", "Sweatshirts", "Vest(s)", "Jacket(s)", "Warm coat", "Waterproof, insulated, non-skid boots", "Gloves", "Warm socks (wool / thermal)", "Scarf", "Hat", "Pajamas", "Flip flops for the shower", "Church-camp-appropriate swimsuit"] },
-  { group: "Health & cosmetics", items: ["Prescription medication", "Sunscreen", "Chapstick", "Shower products", "Other cosmetic products", "Lotions / moisturizers", "Water bottle"] },
+  { group: "Health & cosmetics", items: ["Prescription medication", "Motion sickness medicine (if needed)", "Sunscreen", "Chapstick", "Shower products", "Other cosmetic products", "Lotions / moisturizers", "Water bottle"] },
   { group: "Tech & school", items: ["Bible", "Christian Reflections on the Leadership Challenge (Kouzes & Posner, eds.)", "The Freedom of Self-Forgetfulness (Dr. Timothy Keller)", "LPI Assessment results", "Case study notes, book notes, River Crossing Project Proposal", "Leadership Summit Notebook", "Chargers", "Pen / pencil"] }
 ];
 
@@ -424,26 +436,35 @@ const FAQ = [
 
   { id: "travel", cat: "travel", q: "How do I travel to and from Leadership Summit?", a: `
     <div class="two">
-      <div class="opt"><h5>Fly into Denver (DEN) <span class="tag">Strongly encouraged</span></h5><p>Join the group travel package. It includes transportation from the airport to Crooked Creek in Fraser, about a 2-hour drive.</p></div>
+      <div class="opt"><h5>Fly into Denver (DEN) <span class="tag">Strongly encouraged</span></h5><p>Join the group travel package: Southwest flights on January 2 and 8, plus a charter bus between the airport and Crooked Creek in Fraser, about a 2-hour drive. See <a href="#q-arrive" data-open="q-arrive">flight and bus times</a>.</p></div>
       <div class="opt"><h5>Drive your own car</h5><p>Students who road-trip together are responsible for their own ride to and from Colorado. The Summit Team does not help students find rides.</p></div>
     </div>
     <div class="callout warn"><strong>Important</strong><p>Given the size of the class and the camp’s location, the Summit Team cannot pick students up from the airport or bus station. If you fly to an airport on your own, you are fully responsible for car transportation to and from Crooked Creek unless you have coordinated with Nicole Reed (<a href="mailto:ncr24a@acu.edu">ncr24a@acu.edu</a>).</p></div>` },
 
-  { id: "arrive", cat: "travel", q: "When should I expect to arrive and depart?", a: `
+  { id: "arrive", cat: "travel", q: "When should I expect to arrive and depart? What are the flight times?", a: `
+    <div class="flights">
+      <div class="flight"><span class="label">Going · Sat, Jan 2</span><h5>Southwest #WN1327</h5>
+        <div class="route"><div><time>11:40 am</time><span>Departs</span></div><span class="arrow" aria-hidden="true">→</span><div><time>12:45 pm</time><span>Arrives Denver (DEN)</span></div></div></div>
+      <div class="flight"><span class="label">Coming home · Fri, Jan 8</span><h5>Southwest #WN1429</h5>
+        <div class="route"><div><time>4:10 pm</time><span>Departs Denver (DEN)</span></div><span class="arrow" aria-hidden="true">→</span><div><time>7:05 pm</time><span>Arrives Dallas Love Field (DAL)</span></div></div></div>
+    </div>
     <div class="timeline">
       <div class="day"><h5>Saturday, January 2</h5><ol>
-        <li><time>Before 1:15 pm</time>Ideal flight arrival into DEN</li>
+        <li><time>11:40 am</time>Flight departs (Southwest #WN1327)</li>
+        <li><time>12:45 pm</time>Flight arrives in Denver (DEN)</li>
+        <li class="key"><time>2:00 pm</time>Charter bus departs DEN for Crooked Creek</li>
         <li class="key"><time>4:00 pm</time>Check-in begins and rooms are available</li>
         <li><time>4:30 pm</time>Check-in ends</li>
         <li class="key"><time>5:00 pm</time>Official program begins</li>
       </ol></div>
       <div class="day"><h5>Friday, January 8</h5><ol>
-        <li class="key"><time>10:00 am</time>Check-out</li>
-        <li><time>2:00 pm</time>Earliest suggested flight departure</li>
+        <li class="key"><time>10:00 am</time>Check-out, and the charter bus departs Crooked Creek for DEN</li>
+        <li class="key"><time>4:10 pm</time>Flight departs Denver (Southwest #WN1429)</li>
+        <li><time>7:05 pm</time>Flight arrives at Dallas Love Field (DAL)</li>
       </ol></div>
     </div>
-    <p class="tz">All times are Mountain Time.</p>
-    <p>Plan your flight arrival accordingly. It’s better to spend time waiting at the airport than to rush to make your flight.</p>` },
+    <p class="tz">Flight times are local to each airport. All other times are Mountain Time.</p>
+    <p>Booked your own flight into DEN? Plan to land before 1:15 pm on January 2, and don’t book a flight home that leaves earlier than 2:00 pm on January 8. It’s better to spend time waiting at the airport than to rush to make your flight.</p>` },
 
   { id: "contingency", cat: "travel", q: "What is a Travel Contingency Plan?", a: `
     <p><strong>Every student needs a Travel Contingency Plan</strong>: a plan of action in case anything unexpected happens with your travel. Think through these questions before you leave:</p>
@@ -460,13 +481,14 @@ const FAQ = [
     <ul>${ROADS.map(r => `<li>${r.state}: <a href="${r.url}" target="_blank" rel="noopener">${r.label}</a></li>`).join("")}</ul>` },
 
   { id: "cost", cat: "cost", q: "How do I pay for Leadership Summit? What is the cost breakdown?", a: `
-    <div class="formula" aria-label="Program fee minus $75 deposit minus any scholarship equals the balance billed for Spring 2027">
-      <span>Program fee</span><b>−</b><span>$75 deposit</span><b>−</b><span>Scholarship (if awarded)</span><b>=</b><span class="total">Balance billed for Spring 2027</span>
+    <div class="formula" aria-label="Program fee minus $75 deposit equals the balance billed for Spring 2027">
+      <span>Program fee</span><b>−</b><span>$75 deposit</span><b>=</b><span class="total">Balance billed for Spring 2027</span>
     </div>
     <ul>
       <li>The initial <strong>$75 application deposit</strong> is paid online and applied to the overall program fee.</li>
-      <li>Your remaining program fee balance, after the deposit and any awarded scholarship, is billed for the Spring Semester (January 2027).</li>
+      <li>Your remaining program fee balance, after the deposit, is billed for the Spring Semester (January 2027).</li>
       <li>Scholarships are available based on financial need. For more information, contact Nicole Reed at <a href="mailto:ncr24a@acu.edu">ncr24a@acu.edu</a> ${copyBtn("ncr24a@acu.edu")}</li>
+      <li>Scholarships and vouchers will be applied as a credit on your Spring tuition bill.</li>
     </ul>` },
 
   { id: "leave", cat: "camp", q: "Will I be able to leave the Crooked Creek property during Summit?", a: `
@@ -493,7 +515,7 @@ const FAQ = [
     </ul>` },
 
   { id: "allergies", cat: "camp", q: "What if I have food allergies?", a: `
-    <p>The application form asks you to list food allergies. The Summit Team passes them to the Crooked Creek Young Life kitchen staff so they know an accommodation is needed at every meal.</p>` },
+    <p>The application form asks you to list food allergies. The Summit Team shares any food limitations with the Crooked Creek Young Life kitchen staff.</p>` },
 
   { id: "packing", cat: "packing", q: "What do I pack? Is there a packing list?", a: `
     <p>Crooked Creek sits far higher than most of Texas, and mountain weather can change fast.</p>
